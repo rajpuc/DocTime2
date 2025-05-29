@@ -1,0 +1,62 @@
+.bg-prescription {
+  background-color: rgba(13, 134, 138, 0.527);
+  color: #fff;
+}
+.top-1001 {
+  top: calc(100% + 2px);
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+.cust-form-control::placeholder {
+  color: #b3bac0 !important; /* Bootstrap's muted color */
+  opacity: 1; /* Firefox reduces opacity by default */
+}
+.a4-prescription {
+  background-color: rgba(193, 231, 233, 0.527);
+}
+
+.react-to-print{
+  width: 148mm;
+  min-height:100vh;
+  margin: 0 auto;
+  box-sizing: border-box;
+  display: flex;
+  padding-inline: 12px;
+  padding-bottom: 12px;
+  flex-direction: column;
+}
+.react-to-print .prescription-det{
+  flex-basis: 100vh;
+}
+.bg-white{
+  background-color: #fff;
+}
+
+@media print {
+  
+  
+  .react-to-print {
+    width: 100vw !important;
+    height: 100vh;
+    padding-inline: 12px;
+    margin: 0 0;
+    box-sizing: border-box;
+    page-break-after: always; 
+    padding-bottom: 12px;
+  }
+
+  .d-print-none {
+    display: none !important; /* Hide print button */
+  }
+
+  /* Prevent unwanted page breaks */
+  .row, .col, .a4-prescription {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  ul {
+    padding-left: 1rem;
+  }
+}
+
+
