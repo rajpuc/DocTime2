@@ -138,23 +138,6 @@ const CreatePatient = () => {
     });
   };
 
-  // const handleFilter = (e) => {
-  //   const value = e.target.value.trim();
-  //   setSearchPatientText(value);
-
-  //   if (!value) {
-  //     setFilteredPatient([]);
-  //     return;
-  //   }
-
-  //   const regex = new RegExp(value, "i");
-  //   setFilteredPatient(
-  //     data.filter((patient) =>
-  //       regex.test(searchBy === "name" ? patient.name : patient.mobile_number)
-  //     )
-  //   );
-  // };
-
   // Debounced search
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

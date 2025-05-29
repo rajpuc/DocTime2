@@ -20,7 +20,9 @@ router.post("/medicine",AuthVerification,MedicineController.createMedicine);
 router.get("/medicines",AuthVerification,MedicineController.getAllMedicines);
 router.get("/medicine/:id",AuthVerification,MedicineController.getMedicineById);
 router.post("/update-medicine/:id",AuthVerification,MedicineController.updateMedicine);
-router.post("/remove-medicine/:id",AuthVerification,MedicineController.deleteMedicine);
+router.post("/remove-medicine/:id", AuthVerification, MedicineController.deleteMedicine);
+router.get("/search-medicines", AuthVerification, MedicineController.searchMedicine);
+
 
 //Patient Routes
 router.post("/patient",AuthVerification,PatientController.createPatient);

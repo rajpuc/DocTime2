@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const PrescriptionMedicineModel = require("../../models/Prescription/PrescriptionMedicineModel");
 const PrescriptionModel = require("../../models/Prescription/PrescriptionModel");
 const PatientModel = require("../../models/Patient/PatientModel");
@@ -86,29 +85,6 @@ exports.updatePrescription = async (req, res) => {
 };
 
 // Delete prescription
-// exports.deletePrescription = async (req, res) => {
-//   try {
-//     const { id } = req.params;
-//     const deleted = await PrescriptionModel.findByIdAndDelete(id);
-
-//     if (!deleted) {
-//       return res
-//         .status(404)
-//         .json({ status: "fail", message: "Prescription not found." });
-//     }
-
-//     res
-//       .status(200)
-//       .json({
-//         status: "success",
-//         message: "Prescription deleted successfully.",
-//       });
-//   } catch (error) {
-//     res
-//       .status(500)
-//       .json({ status: "fail", message: "Server error.", error: error.message });
-//   }
-// };
 exports.deletePrescriptionById = async (req, res) => {
   const session = await mongoose.startSession();
 
@@ -153,201 +129,7 @@ exports.deletePrescriptionById = async (req, res) => {
 };
 
 
-// Create full prescription
-// exports.createFullPrescription = async (req, res) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
-
-//   try {
-//     const     {name, mobile_number, weight, age, HBsAg, history, complaints,obsteric, menstrual, vaccine, past_medical, past_surgical, family_social,contraceptive,drug,examination,general, obsterical, abdominal, pelvic,investigation, provisional_dx, special_note, medicines}= req.body;
-
-//     // 1. Create Patient (if not exists)
-//     // Validation
-//     if (!name || !mobile_number || !weight || !age) {
-//       return res.status(400).json({ status: "fail", message: "Name, mobile number, weight, and age are required." });
-//     }
-
-//         // Check for duplicate mobile number
-//         const existing = await PatientModel.findOne({ mobile_number });
-//         if (existing) {
-//           return res.status(409).json({ status: "fail", message: "Mobile number already exists." });
-//         }
-
-//             const newPatient = await PatientModel.create({
-//               name,
-//               mobile_number,
-//               weight,
-//               age,
-//               HBsAg,
-//             });
-
-//     const existingPatient = await PatientModel.findOne({ mobile_number: patient.mobile_number });
-//     let patientDoc;
-
-//     if (existingPatient) {
-//       patientDoc = existingPatient;
-//     } else {
-//       patientDoc = await PatientModel.create([patient], { session });
-//     }
-
-//     const patient_id = patientDoc._id || patientDoc[0]._id;
-
-//     // 2. Create Prescription
-//     const newPrescription = await PrescriptionModel.create(
-//       [{ ...prescription, patient_id }],
-//       { session }
-//     );
-//     const prescription_id = newPrescription[0]._id;
-
-//     // 3. Add Medicines
-//     if (!Array.isArray(medicines) || medicines.length === 0) {
-//       throw new Error("Medicines array is required and must contain at least one item.");
-//     }
-
-//     const medicineDocs = medicines.map((med) => ({
-//       prescription_id,
-//       patient_id,
-//       medicine_name: med.medicine_name,
-//       schedule: med.schedule,
-//     }));
-
-//     await PrescriptionMedicineModel.insertMany(medicineDocs, { session });
-
-//     // Commit transaction
-//     await session.commitTransaction();
-//     session.endSession();
-
-//     res.status(201).json({
-//       status: "success",
-//       message: "Patient, prescription, and medicines created successfully.",
-//       data: {
-//         patient: patientDoc,
-//         prescription: newPrescription,
-//         medicines: medicineDocs,
-//       },
-//     });
-//   } catch (error) {
-//     await session.abortTransaction();
-//     session.endSession();
-//     console.error(error);
-//     res.status(500).json({
-//       status: "fail",
-//       message: "Failed to create full prescription.",
-//       error: error.message,
-//     });
-//   }
-// };
-
 //Create full prescription
-// exports.createFullPrescription = async (req, res) => {
-//   const session = await mongoose.startSession();
-//   session.startTransaction();
-
-//   try {
-//     const {
-//       patient_id,
-//       history,
-//       complaints,
-//       obsteric,
-//       menstrual,
-//       vaccine,
-//       past_medical,
-//       past_surgical,
-//       family_social,
-//       contraceptive,
-//       drug,
-//       examination,
-//       general,
-//       obsterical,
-//       abdominal,
-//       pelvic,
-//       investigation,
-//       provisional_dx,
-//       special_note,
-//       medicines,
-//     } = req.body;
-
-//     // Validation: patient_id is required
-//     if (!patient_id) {
-//       return res.status(400).json({
-//         status: "fail",
-//         message: "Patient ID is required.",
-//       });
-//     }
-
-//     // Create the prescription
-//     const prescription = await PrescriptionModel.create(
-//       [
-//         {
-//           patient_id,
-//           history,
-//           complaints,
-//           obsteric,
-//           menstrual,
-//           vaccine,
-//           past_medical,
-//           past_surgical,
-//           family_social,
-//           contraceptive,
-//           drug,
-//           examination,
-//           general,
-//           obsterical,
-//           abdominal,
-//           pelvic,
-//           investigation,
-//           provisional_dx,
-//           special_note,
-//         },
-//       ],
-//       { session }
-//     );
-
-//     // Validate and insert medicines if provided
-//     let createdMedicines = [];
-//     if (Array.isArray(medicines) && medicines.length > 0) {
-//       for (const med of medicines) {
-//         if (!med.medicine_name || !med.schedule) {
-//           await session.abortTransaction();
-//           return res.status(400).json({
-//             status: "fail",
-//             message: "Each medicine must have 'medicine_name' and 'schedule'.",
-//           });
-//         }
-//       }
-
-//       // Attach prescription_id and patient_id to each medicine
-//       const medicineDocs = medicines.map((med) => ({
-//         prescription_id: prescription[0]._id,
-//         patient_id,
-//         medicine_name: med.medicine_name,
-//         schedule: med.schedule,
-//       }));
-
-//       createdMedicines = await PrescriptionMedicineModel.insertMany(medicineDocs, { session });
-//     }
-
-//     await session.commitTransaction();
-//     session.endSession();
-
-//     res.status(201).json({
-//       status: "success",
-//       message: "Prescription created successfully with medicines.",
-//       data: {
-//         prescription: prescription[0],
-//         medicines: createdMedicines,
-//       },
-//     });
-//   } catch (error) {
-//     await session.abortTransaction();
-//     session.endSession();
-//     res.status(500).json({
-//       status: "fail",
-//       message: "Server error.",
-//       error: error.message,
-//     });
-//   }
-// };
 exports.createFullPrescription = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -494,6 +276,7 @@ exports.getFullPrescription = async (req, res) => {
   }
 };
 
+//Get Prescription list
 exports.PrescriptionList = async (req, res) => {
   try {
     const { pageNo, perPage, searchKeyword } = req.params;

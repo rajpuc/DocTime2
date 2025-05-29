@@ -82,7 +82,7 @@ const MasterLayout = (props) => {
       </Navbar>
 
       <div ref={sideNavRef} className="side-nav-open">
-        <NavLink
+        {/* <NavLink
           className={(navData) =>
             navData.isActive
               ? "side-bar-item-active side-bar-item mt-2"
@@ -93,7 +93,7 @@ const MasterLayout = (props) => {
         >
           <RiDashboardLine className="side-bar-item-icon" />
           <span className="side-bar-item-caption">Dashboard</span>
-        </NavLink>
+        </NavLink> */}
 
         <NavLink
           className={(navData) =>

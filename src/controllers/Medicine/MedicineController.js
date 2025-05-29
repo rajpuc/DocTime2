@@ -97,3 +97,40 @@ exports.deleteMedicine = async (req, res) => {
 };
 
 
+// Search medicines by keyword (name, group_name)
+exports.searchMedicine = async (req, res) => {
+  try {
+    const {keyword} = req.query;
+
+    if (!keyword) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Keyword is required for search.",
+      });
+    }
+
+    // Case-insensitive partial match on name, group_name
+    const regex = new RegExp(keyword, "i");
+    const medicines = await MedicineModel.find({
+      $or: [
+        { name: regex },
+        { group_name: regex }
+      ],
+    }).sort({ createdAt: -1 });
+
+    res.status(200).json({
+      status: "success",
+      total: medicines.length,
+      message:"Successfully retrived medicine",
+      data: medicines,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "fail",
+      message: "Server error during medicine search.",
+      error: error.message,
+    });
+  }
+};
+
+

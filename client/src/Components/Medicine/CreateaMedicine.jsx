@@ -7,7 +7,7 @@ import { getToken } from "../../Helper/SessionHelper";
 import { useDispatch } from "react-redux";
 import { HideLoader, ShowLoader } from "../../Redux/StateSlice/SettingSlice";
 import Swal from "sweetalert2";
-import { FormControl } from "react-bootstrap";
+import { FormControl, Spinner } from "react-bootstrap";
 
 const CreateMedicine = () => {
   const [data, setData] = useState([]);
@@ -17,7 +17,7 @@ const CreateMedicine = () => {
   const nameRef = useRef();
   const groupNameRef = useRef();
   const scheduleRef = useRef();
-
+  const [searchLoader, setSearchLoader] = useState(false);
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -39,7 +39,7 @@ const CreateMedicine = () => {
         if (editMedicine) {
           response = await axios.post(
             `${BaseURL}/update-medicine/${editMedicine._id}`,
-            { name, group_name,schedule },
+            { name, group_name, schedule },
             { headers: { token: getToken() } }
           );
         } else {
@@ -123,18 +123,44 @@ const CreateMedicine = () => {
     });
   };
 
-  const handleFilter = (e) => {
-    const value = e.target.value.trim();
-    setSearchText(value);
-
-    if (!value) {
+  const handleFilter = async (e) => {
+    if (!searchText) {
       setFilteredMedicine([]);
       return;
     }
 
-    const regex = new RegExp(value, "i");
-    setFilteredMedicine(data.filter((med) => regex.test(med.name)));
+    try {
+      setSearchLoader(true);
+      const response = await axios.get(
+        `${BaseURL}/search-medicines?keyword=${searchText}`,
+        { headers: { token: getToken() } }
+      );
+
+      if (response.data.status === "success") {
+        setFilteredMedicine(response.data.data);
+      } else {
+        setFilteredMedicine([]);
+        ErrorToast(response.data.message || "No matching medicine found.");
+      }
+    } catch (error) {
+      ErrorToast(error.response.data.message || "server error");
+    } finally {
+      setSearchLoader(false);
+    }
   };
+
+  // Debounced search
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchText.length > 0) {
+        handleFilter();
+      } else {
+        setFilteredMedicine([]);
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchText]);
 
   useEffect(() => {
     if (editMedicine) {
@@ -145,9 +171,12 @@ const CreateMedicine = () => {
   }, [editMedicine]);
 
   useEffect(() => {
-    dispatch(ShowLoader());
-    fetchData();
-    dispatch(HideLoader());
+    const load = async () => {
+      dispatch(ShowLoader());
+      await fetchData();
+      dispatch(HideLoader());
+    };
+    load();
   }, []);
 
   return (
@@ -204,9 +233,9 @@ const CreateMedicine = () => {
           <div className="d-flex col-6">
             <FormControl
               type="text"
-              placeholder={`Search by Name`}
+              placeholder={`Search Medicine here`}
               value={searchText}
-              onChange={handleFilter}
+              onChange={(e) => setSearchText(e.target.value)}
               className="me-2"
             />
           </div>
@@ -223,8 +252,49 @@ const CreateMedicine = () => {
               </tr>
             </thead>
             <tbody>
-              {(searchText ? filteredMedicine : data).length > 0 ? (
-                (searchText ? filteredMedicine : data).map((item) => (
+              {searchText ? (
+                filteredMedicine.length > 0 ? (
+                  filteredMedicine.map((item) => (
+                    <tr key={item._id}>
+                      <td>{item.name}</td>
+                      <td>{item.group_name}</td>
+                      <td>{item.schedule}</td>
+                      <td>
+                        <button
+                          className="btn btn-sm btn-primary me-2"
+                          onClick={() => handleEdit(item)}
+                        >
+                          Edit
+                        </button>
+                        <button
+                          className="btn btn-sm btn-danger"
+                          onClick={() => deleteMedicine(item._id)}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : searchLoader ? (
+                  <tr>
+                    <td
+                      colSpan="100%"
+                      style={{ padding: "20px", textAlign: "center" }}
+                    >
+                      <div style={{ display: "inline-block", padding: "10px" }}>
+                        <Spinner style={{ backgroundColor: "transparent" }} />
+                      </div>
+                    </td>
+                  </tr>
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center">
+                      No Medicine available
+                    </td>
+                  </tr>
+                )
+              ) : data.length > 0 ? (
+                data.map((item) => (
                   <tr key={item._id}>
                     <td>{item.name}</td>
                     <td>{item.group_name}</td>
@@ -247,8 +317,8 @@ const CreateMedicine = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center">
-                    No Medicines Found
+                  <td colSpan={4} className="text-center">
+                    No Medicine available
                   </td>
                 </tr>
               )}
