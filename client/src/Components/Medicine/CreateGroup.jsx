@@ -8,63 +8,34 @@ import { useDispatch } from "react-redux";
 import { HideLoader, ShowLoader } from "../../Redux/StateSlice/SettingSlice";
 import Swal from "sweetalert2";
 import { FormControl, Spinner } from "react-bootstrap";
-import Select from "react-select";
 
-const CreateMedicine = () => {
+const CreateGroup = () => {
   const [data, setData] = useState([]);
-  const [filteredMedicine, setFilteredMedicine] = useState([]);
-  const [editMedicine, setEditMedicine] = useState(null);
-  const [searchText, setSearchText] = useState("");
   const nameRef = useRef();
-  const groupIdRef = useRef();
-  const scheduleRef = useRef();
-  const [searchLoader, setSearchLoader] = useState(false);
-  const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [groups, setGroups] = useState([]);
-
 
   const handleSubmit = async () => {
     const name = nameRef.current.value;
-    const groupID = groupIdRef.current.value;
-    const schedule = scheduleRef.current.value;
+ 
 
     if (IsEmpty(name)) {
       ErrorToast("Medicine Name Required");
-    } else if (IsEmpty(groupID)) {
-      ErrorToast("Group ID Required");
-    } else if (IsEmpty(schedule)) {
-      ErrorToast("Schedule Required");
     } else {
       try {
         dispatch(ShowLoader());
-        let response;
-        if (editMedicine) {
-          response = await axios.post(
-            `${BaseURL}/update-medicine/${editMedicine._id}`,
-            { name, groupID, schedule },
-            { headers: { token: getToken() } }
-          );
-        } else {
-          response = await axios.post(
-            `${BaseURL}/medicine`,
-            { name, groupID, schedule },
-            { headers: { token: getToken() } }
-          );
-        }
+        let response = await axios.post(
+          `${BaseURL}/CreateGroup`,
+          { name },
+          { headers: { token: getToken() } }
+        );
+        
 
         if (response?.data?.status === "success") {
           SuccessToast(
-            editMedicine
-              ? "Medicine updated successfully"
-              : "Medicine added successfully"
+             "Group name added successfully"
           );
 
           nameRef.current.value = "";
-          scheduleRef.current.value = "";
-          groupIdRef.current.value = "";
-
-          setEditMedicine(null);
           fetchData();
         } else {
           ErrorToast(response?.data?.message || "Action failed.");
@@ -82,7 +53,7 @@ const CreateMedicine = () => {
 
   const fetchData = async () => {
     try {
-      let result = await axios.get(`${BaseURL}/medicines`, {
+      let result = await axios.get(`${BaseURL}/getAllGroup`, {
         headers: { token: getToken() },
       });
       setData(result.data.data);
@@ -93,21 +64,6 @@ const CreateMedicine = () => {
       ErrorToast("No Medicines Found");
     }
   };
-  const fetchGroups = async () => {
-    try {
-      dispatch(ShowLoader());
-      const response = await axios.get(`${BaseURL}/getAllGroup`, {
-        headers: { token: getToken() },
-      });
-      setGroups(response.data.data || []);
-    } catch (error) {
-      if (error.status === 401) {
-        removeSessions();
-      }
-    } finally {
-      dispatch(HideLoader());
-    }
-  };
 
 
 
@@ -116,24 +72,10 @@ const CreateMedicine = () => {
     const load = async () => {
       dispatch(ShowLoader());
       await fetchData();
-      await fetchGroups();
       dispatch(HideLoader());
     };
     load();
   }, []);
-
-  const groupOptions = groups.map((group) => ({
-    value: group._id,
-    label: `${group.name}`,
-    ...group,
-  }));
-
-  const handleSelectGroup = (selectedOption) => {
-    if (!selectedOption) return;
-
-    groupIdRef.current.value=selectedOption._id;
-  };
-
 
   return (
     <div className="container">
@@ -141,40 +83,27 @@ const CreateMedicine = () => {
         <div className="col-12">
           <div className="card animated fadeIn p-3">
             <div className="card-body">
-              <h4 className="card-title">Add Medicine</h4>
+              <h4 className="card-title">Add Group</h4>
               <hr />
               <div className="container-fluid">
                 <div className="row">
-                  <div className="col-4">
-                    <label>Name</label>
-                    <input ref={nameRef} className="form-control" type="text" />
-                  </div>
-                  <div className="col-md-4">
-                    <label>Select Group</label>
-                    <Select
-                      ref={groupIdRef}
-                      options={groupOptions}
-                      onChange={handleSelectGroup}
-                      placeholder="Search and select a Doctor"
-                      isClearable
-                    />
-                  </div>
-                  <div className="col-4">
-                    <label>Schedule</label>
+                  <div className="col-6">
+                    <label>Group Name</label>
                     <input
-                      ref={scheduleRef}
+                      ref={nameRef}
                       className="form-control"
                       type="text"
                     />
                   </div>
+
                 </div>
                 <div className="row mt-2">
-                  <div className="p-2">
+                  <div className="p-2 col-3">
                     <button
                       onClick={handleSubmit}
                       className="btn w-100 btn-success"
                     >
-                      {editMedicine ? "Update Medicine" : "Add Medicine"}
+                      Add Group
                     </button>
                   </div>
                 </div>
@@ -185,27 +114,27 @@ const CreateMedicine = () => {
       </div>
 
       <div className="mt-4">
-        <h4 className="card-title">Medicine List</h4>
+        <h4 className="card-title">Group List</h4>
+
         <div className="table-responsive mt-2">
           <table className="table table-striped table-bordered">
             <thead className="table-success">
               <tr>
-                <th>Name</th>
-                <th>Schedule</th>
+                <th>Group Name</th>
               </tr>
             </thead>
             <tbody>
-              { data.length > 0 ? (
+              {
+              data.length > 0 ? (
                 data.map((item) => (
                   <tr key={item._id}>
                     <td>{item.name}</td>
-                    <td>{item.schedule}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td colSpan={4} className="text-center">
-                    No Medicine available
+                    No Group Name available
                   </td>
                 </tr>
               )}
@@ -217,4 +146,5 @@ const CreateMedicine = () => {
   );
 };
 
-export default CreateMedicine;
+export default CreateGroup;
+

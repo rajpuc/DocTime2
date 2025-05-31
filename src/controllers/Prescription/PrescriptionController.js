@@ -137,7 +137,6 @@ exports.createFullPrescription = async (req, res) => {
   try {
     const { patient_id, medicines, ...prescriptionData } = req.body;
 
-    console.log(patient_id, medicines, prescriptionData);
     // 1. VALIDATION PHASE (Before any DB operations)
     if (!patient_id) {
       await session.abortTransaction();

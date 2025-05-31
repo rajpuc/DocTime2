@@ -10,6 +10,8 @@ import DashboardPage from "./Pages/DashboardPage";
 import CreatePrescriptionPage from "./Pages/CreatePrescriptionPage";
 import A4Page from "./Pages/A4Page";
 import PrescriptionListPage from "./Pages/PrescriptionListPage";
+import CreateGroupPage from "./Pages/CreateGroupPage";
+import PatientListPage from "./Pages/PatientListPage";
 
 function App() {
   if (getToken()) {
@@ -17,12 +19,13 @@ function App() {
       <Fragment>
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<DashboardPage/>} />
             <Route path="/CreatePatient" element={<CreatePatientPage/>} />
-            <Route path="/PrescriptionList" element={<PrescriptionListPage/>} />
+            <Route path="/" element={<PrescriptionListPage/>} />
             <Route path="/Print/:id" element={<A4Page/>} />
             <Route path="/CreateMedicine" element={<CreateMedicinePage/>} />
             <Route path="/CreatePrescription" element={<CreatePrescriptionPage/>} />
+            <Route path="/CreateGroup" element={<CreateGroupPage/>} />
+            <Route path="/PatientList" element={<PatientListPage/>} />
           </Routes>
         </BrowserRouter>
         <FullscreenLoader />

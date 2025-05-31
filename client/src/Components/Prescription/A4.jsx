@@ -19,19 +19,21 @@ const A4 = () => {
   const contentRef = useRef(null);
   const dispatch = useDispatch();
   const [prescriptionDetails, setPrescriptionDetails] = useState(null);
-
   const reactToPrintFn = useReactToPrint({ contentRef });
-  
+
   useEffect(() => {
     const fetchSaleDetails = async () => {
       console.log(id);
       dispatch(ShowLoader());
       try {
-        const response = await axios.get(`${BaseURL}/full-prescription/${id}`, {
+        const response = await axios.get(`${BaseURL}/PrescriptionDetails/${id}`, {
           headers: { token: getToken() },
         });
         setPrescriptionDetails(response.data?.data);
       } catch (error) {
+        if (error.status === 401) {
+          removeSessions();
+        }
         ErrorToast(error.response?.data?.message || "Something went wrong.");
       } finally {
         dispatch(HideLoader());
@@ -41,11 +43,7 @@ const A4 = () => {
   }, [id, dispatch]);
   return (
     <>
-      <div
-        ref={contentRef}
-        className=" react-to-print a4-prescription"
-        
-      >
+      <div ref={contentRef} className=" react-to-print a4-prescription">
         <Row
           className=""
           style={{
@@ -56,22 +54,22 @@ const A4 = () => {
           <Col>
             <Row style={{ marginBottom: "8px" }}>
               <Col xs={4}>
-                Name: {prescriptionDetails?.medicines[0]?.patient_id?.name}
+                Name: {prescriptionDetails?.prescription?.name}
               </Col>
               <Col xs={2}>
-                Age: {prescriptionDetails?.medicines[0]?.patient_id?.age}
+                Age: {prescriptionDetails?.prescription?.age}
               </Col>
               <Col xs={2}>
-                Weight: {prescriptionDetails?.medicines[0]?.patient_id?.weight}
+                Weight: {prescriptionDetails?.prescription?.weight}
               </Col>
               <Col xs={4}>
-                HBsAg: {prescriptionDetails?.medicines[0]?.patient_id?.HBsAg}
+                HBsAg: {prescriptionDetails?.prescription?.HBsAg}
               </Col>
             </Row>
             <Row style={{ marginBottom: "6px" }}>
               <Col xs={4}>
                 Tel:{" "}
-                {prescriptionDetails?.medicines[0]?.patient_id?.mobile_number}
+                {prescriptionDetails?.prescription?.mobile}
               </Col>
             </Row>
           </Col>
@@ -168,13 +166,13 @@ const A4 = () => {
           <Col className="bg-white">
             <ul className="d-flex flex-column gap-3">
               {prescriptionDetails &&
-                prescriptionDetails.medicines.length > 0 &&
-                prescriptionDetails.medicines.map((item, idx) => (
+                prescriptionDetails?.medicines.length > 0 &&
+                prescriptionDetails?.medicines.map((item, idx) => (
                   <li key={idx}>
-                    <Row >
+                    <Row>
                       <Col>
                         <Row>
-                          <Col className="fs-6">{item.medicine_name}</Col>
+                          <Col className="fs-6">{item.name}</Col>
                         </Row>
                         <Row>
                           <Col>{item.schedule}</Col>
@@ -189,12 +187,10 @@ const A4 = () => {
       </div>
 
       <div className="text-center mt-4 mb-4 d-print-none">
-            <button className="btn btn-success" onClick={reactToPrintFn}>
-              <i className="fa fa-print me-2"></i> Print Prescription
-            </button>
+        <button className="btn btn-success" onClick={reactToPrintFn}>
+          <i className="fa fa-print me-2"></i> Print Prescription
+        </button>
       </div>
-
-
     </>
   );
 };

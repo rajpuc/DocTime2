@@ -10,9 +10,9 @@ import { MdPrint } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
-const PrescriptionList = () => {
+const PatientList = () => {
   const dispatch = useDispatch();
-  const [prescriptions, setPrescriptions] = useState([]);
+  const [patients, setPatients] = useState([]);
   const [total, setTotal] = useState(0);
   const [searchKeyword, setSearchKeyword] = useState("0");
   const [perPage, setPerPage] = useState(20);
@@ -26,11 +26,11 @@ const PrescriptionList = () => {
     try {
       dispatch(ShowLoader());
       const response = await axios.get(
-        `${BaseURL}/getAllPrescription/${page}/${perPage}/${keyword}`,
+        `${BaseURL}/getAllPatients/${page}/${perPage}/${keyword}`,
         { headers: { token: getToken() } }
       );
 
-      setPrescriptions(response.data.data);
+      setPatients(response.data.data);
       setTotal(response.data.total);
     } catch (err) {
       if (err.status === 401) {
@@ -52,8 +52,6 @@ const PrescriptionList = () => {
     await fetchData(1, value, searchKeyword);
   };
 
-
-
   return (
     <Fragment>
       <div className="container-fluid my-5">
@@ -64,7 +62,7 @@ const PrescriptionList = () => {
                 <div className="container-fluid">
                   <div className="row">
                     <div className="col-12 col-lg-3">
-                      <h5>Prescription List</h5>
+                      <h5>Patient List</h5>
                     </div>
                     <div className="col-12 col-lg-3">
                       <input
@@ -96,42 +94,22 @@ const PrescriptionList = () => {
                               <th>Patient ID</th>
                               <th>Name</th>
                               <th>Mobile</th>
-                              <th>History</th>
-                              <th>Complaints</th>
-                              <th>Print</th>
+                              <th>Weight</th>
+                              <th>Age</th>
                               <th>Date</th>
                             </tr>
                           </thead>
                           <tbody>
-                            {prescriptions.map((prescription) => (
-                              <tr key={prescription._id}>
-                                <td>{prescription?.PN}</td>
-                                <td>{prescription?.name}</td>
-                                <td>{prescription?.mobile}</td>
-                                <td>{prescription?.history}</td>
+                            {patients.map((patient) => (
+                              <tr key={patient._id}>
+                                <td>{patient?.ID}</td>
+                                <td>{patient?.name}</td>
+                                <td>{patient?.mobile}</td>
+                                <td>{patient?.weight}</td>
+                                <td>{patient?.age}</td>
                                 <td>
-                                  {prescription?.complaints}
+                                  {patient?.CreatedDate.split("T")[0]}
                                 </td>
-                                <td>
-                                  <button
-                                    onClick={() =>
-                                      navigate(
-                                        `/Print/${prescription._id}`
-                                      )
-                                    }
-                                    className="btn btn-outline-light text-success p-2 mb-0 btn-sm ms-2"
-                                  >
-                                    <MdPrint size={15} />
-                                  </button>
-                                </td>
-                                <td>
-                                  {
-                                    prescription?.CreatedDate.split(
-                                      "T"
-                                    )[0]
-                                  }
-                                </td>
-
                               </tr>
                             ))}
                           </tbody>
@@ -173,4 +151,4 @@ const PrescriptionList = () => {
   );
 };
 
-export default PrescriptionList;
+export default PatientList;

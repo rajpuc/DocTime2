@@ -14,6 +14,7 @@ import {
 } from "react-icons/ai";
 import { BsListNested } from "react-icons/bs";
 import { RiDashboardLine } from "react-icons/ri";
+import { MdGroupWork } from "react-icons/md";
 import logo from "../../assets/images/icon.png";
 import { getUserDetails, removeSessions } from "../../Helper/SessionHelper";
 
@@ -94,6 +95,32 @@ const MasterLayout = (props) => {
           <RiDashboardLine className="side-bar-item-icon" />
           <span className="side-bar-item-caption">Dashboard</span>
         </NavLink> */}
+        <NavLink
+          className={(navData) =>
+            navData.isActive
+              ? "side-bar-item-active side-bar-item mt-2"
+              : "side-bar-item mt-2"
+          }
+          to="/"
+        >
+          <BsListNested className="side-bar-item-icon" />
+          <span className="side-bar-item-caption">Prescription List</span>
+        </NavLink>
+
+        <NavLink
+          className={(navData) =>
+            navData.isActive
+              ? "side-bar-item-active side-bar-item mt-2"
+              : "side-bar-item mt-2"
+          }
+          to="/createPrescription"
+          end
+        >
+          <PiPrescriptionFill className="side-bar-item-icon" />
+          <span className="side-bar-item-caption">Create Prescription</span>
+        </NavLink>
+
+
 
         <NavLink
           className={(navData) =>
@@ -113,11 +140,10 @@ const MasterLayout = (props) => {
               ? "side-bar-item-active side-bar-item mt-2"
               : "side-bar-item mt-2"
           }
-          to="/createPrescription"
-          end
+          to="/PatientList"
         >
-          <PiPrescriptionFill className="side-bar-item-icon" />
-          <span className="side-bar-item-caption">Create Prescription</span>
+          <BsListNested className="side-bar-item-icon" />
+          <span className="side-bar-item-caption">Patient List</span>
         </NavLink>
 
         <NavLink
@@ -126,10 +152,11 @@ const MasterLayout = (props) => {
               ? "side-bar-item-active side-bar-item mt-2"
               : "side-bar-item mt-2"
           }
-          to="/PrescriptionList"
+          to="/createGroup"
+          end
         >
-          <BsListNested className="side-bar-item-icon" />
-          <span className="side-bar-item-caption">Prescription List</span>
+          <MdGroupWork className="side-bar-item-icon"/>
+          <span className="side-bar-item-caption">Create Group</span>
         </NavLink>
 
         <NavLink
@@ -143,7 +170,6 @@ const MasterLayout = (props) => {
           <GiMedicinePills className="side-bar-item-icon" />
           <span className="side-bar-item-caption">Create Medicine</span>
         </NavLink>
-
 
       </div>
 

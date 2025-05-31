@@ -33,7 +33,7 @@ const UserLogin = () => {
 
       const { data } = res;
       if (data.status === "success") {
-        setToken(data.token);
+        setToken(document.cookie);
         setUserDetails(data.data);
         setMobile(mobile);
         setName(data.data.name);
@@ -105,7 +105,7 @@ const UserLogin = () => {
         </form>
 
         <div className="mt-4">
-          <Link to="/Registration">
+          {/* <Link to="/Registration">
             <button
               className="btn w-100 fw-bold"
               style={{
@@ -116,7 +116,7 @@ const UserLogin = () => {
             >
               Registration
             </button>
-          </Link>
+          </Link> */}
         </div>
       </div>
     </div>

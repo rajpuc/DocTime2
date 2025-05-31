@@ -1,14 +1,14 @@
 import React,{Fragment, Suspense, lazy} from 'react';
 import MasterLayout from '../Components/MasterLayout/MasterLayout';
 import LazyLoader from './../Components/MasterLayout/LazyLoader';
-const CreateMedicine = lazy(() => import('../Components/Medicine/CreateaMedicine'));
+const CreateGroup = lazy(() => import('../Components/Medicine/CreateGroup'));
 
 const CreateMedicinePage = () => {
   return (
     <Fragment>
       <MasterLayout>
         <Suspense fallback={<LazyLoader />}>
-          <CreateMedicine />
+          <CreateGroup/>
         </Suspense>
       </MasterLayout>
     </Fragment>
